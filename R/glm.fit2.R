@@ -1,3 +1,5 @@
+utils::globalVariables("n", add = TRUE)
+
 glm.fit2 <- 
 function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
     mustart = NULL, offset = rep(0, nobs), family = gaussian(), 
