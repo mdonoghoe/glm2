@@ -6,6 +6,6 @@ Date: 2014-05-07
 Author: Ian Marschner (using code from glm and glm.fit in the stats package)
 Maintainer: Ian Marschner <ian.marschner@mq.edu.au>
 Depends: R (>= 2.12.1), stats
-Description: Fits generalized linear models using the same model specification as glm in the stats package, but with a modified default fitting method that provides greater stability for models that may fail to converge using glm
+Description: Fits generalized linear models using the same model specification as glm in the stats package, but with a modified default fitting method that provides greater stability for models that may fail to converge using glm.
 License: GPL (>=2)
-LazyLoad: yes
+LazyData: true
