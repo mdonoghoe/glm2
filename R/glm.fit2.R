@@ -3,7 +3,7 @@ utils::globalVariables("n", add = TRUE)
 glm.fit2 <- 
 function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
     mustart = NULL, offset = rep(0, nobs), family = gaussian(), 
-    control = list(), intercept = TRUE) 
+    control = list(), intercept = TRUE, singular.ok = TRUE) 
 {
     control <- do.call("glm.control", control)
     x <- as.matrix(x)
@@ -92,7 +92,9 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             z <- (eta - offset)[good] + (y - mu)[good]/mu.eta.val[good]
             w <- sqrt((weights[good] * mu.eta.val[good]^2)/variance(mu)[good])
             ngoodobs <- as.integer(nobs - sum(!good))
-            fit <- lm.fit(x=x[good, , drop = FALSE]*w, y=z*w, singular.ok=FALSE, tol=min(1e-07, control$epsilon/1000))
+            fit <- lm.fit(x=x[good, , drop = FALSE]*w, y=z*w, singular.ok=TRUE, 
+                          tol=min(1e-07, control$epsilon/1000))
+            fit$coefficients[is.na(fit$coefficients)] <- 0
             if (any(!is.finite(fit$coefficients))) {
                 conv <- FALSE
                 warning(gettextf("non-finite coefficients at iteration %d", 
@@ -102,7 +104,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             if (nobs < fit$rank) 
                 stop(gettextf("X matrix has rank %d, but only %d observations", 
                   fit$rank, nobs), domain = NA)
-            start[fit$qr$pivot] <- fit$coefficients
+            start <- fit$coefficients
             eta <- drop(x %*% start)
             mu <- linkinv(eta <- eta + offset)
             dev <- sum(dev.resids(y, mu, weights))
@@ -161,7 +163,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                 while ((dev - devold)/(0.1 + abs(dev)) > -control$epsilon) {
                   if (ii > control$maxit) break
                   ii <- ii + 1
-                  start <- (start + coefold)/2	
+                  start <- (start + coefold)/2
                   eta <- drop(x %*% start)
                   mu <- linkinv(eta <- eta + offset)
                   dev <- sum(dev.resids(y, mu, weights))
@@ -195,8 +197,10 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                 warning("glm.fit2: fitted rates numerically 0 occurred", 
                   call. = FALSE)
         }
-        if (fit$rank < nvars) 
+        if (fit$rank < nvars) {
+            if (!singular.ok) stop("singular fit encountered")
             coef[fit$qr$pivot][seq.int(fit$rank + 1, nvars)] <- NA
+        }
         xxnames <- xnames[fit$qr$pivot]
         residuals <- (y - mu)/mu.eta(eta)
         fit$qr$qr <- as.matrix(fit$qr$qr)

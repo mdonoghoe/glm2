@@ -9,7 +9,8 @@ Generalized Linear Models Fitting Method
 \usage{
 glm.fit2(x, y, weights = rep(1, nobs), start = NULL, 
     etastart = NULL, mustart = NULL, offset = rep(0, nobs), 
-    family = gaussian(), control = list(), intercept = TRUE)
+    family = gaussian(), control = list(), intercept = TRUE,
+    singular.ok = TRUE)
 }
 \arguments{
   \item{x}{
@@ -40,6 +41,9 @@ as for \code{\link{glm.fit}}
 as for \code{\link{glm.fit}}
 }
   \item{intercept}{
+as for \code{\link{glm.fit}}
+}
+  \item{singular.ok}{
 as for \code{\link{glm.fit}}
 }
 }

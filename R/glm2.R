@@ -1,7 +1,8 @@
 glm2 <- 
 function (formula, family = gaussian, data, weights, subset, 
     na.action, start = NULL, etastart, mustart, offset, control = list(...), 
-    model = TRUE, method = "glm.fit2", x = FALSE, y = TRUE, contrasts = NULL, 
+    model = TRUE, method = "glm.fit2", x = FALSE, y = TRUE, 
+    singular.ok = TRUE, contrasts = NULL, 
     ...) 
 {
     call <- match.call()
@@ -56,7 +57,7 @@ function (formula, family = gaussian, data, weights, subset,
         x = X, y = Y, weights = weights, start = start, etastart = etastart, 
         mustart = mustart, offset = offset, family = family, 
         control = control, intercept = attr(mt, "intercept") > 
-            0L))
+            0L, singular.ok = singular.ok))
     if (length(offset) && attr(mt, "intercept") > 0L) {
         fit2 <- eval(call(if (is.function(method)) "method" else method, 
             x = X[, "(Intercept)", drop = FALSE], y = Y, weights = weights, 
