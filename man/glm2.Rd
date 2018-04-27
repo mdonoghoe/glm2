@@ -10,7 +10,7 @@ Fits generalized linear models using the same model specification as \code{glm} 
 glm2(formula, family = gaussian, data, weights, subset, na.action, 
      start = NULL, etastart, mustart, offset, control = list(...), 
      model = TRUE, method = "glm.fit2", x = FALSE, y = TRUE, 
-     contrasts = NULL, ...)
+     singular.ok = TRUE, contrasts = NULL, ...)
 }
 \arguments{
   \item{formula}{
@@ -59,6 +59,9 @@ as for \code{\link{glm}}
   \item{y}{
 as for \code{\link{glm}}
 }
+  \item{singular.ok}{
+as for \code{\link{glm}}
+}
   \item{contrasts}{
 as for \code{\link{glm}}
 }
@@ -68,9 +71,6 @@ as for \code{\link{glm}}
 }
 \details{
 \code{glm2} is a modified version of \code{glm} in the \bold{stats} package. It fits generalized linear models using the same model specification as \code{glm}. It is identical to \code{glm} except for minor modifications to change the default fitting method. The default method uses a stricter form of step-halving to force the deviance to decrease at each iteration and is implemented in \code{glm.fit2}. Like \code{glm}, user-supplied fitting functions can be used with \code{glm2} by passing a function or a character string naming a function to the \code{method} argument. See Marschner (2011) for a discussion of the need for a modified fitting method. 
-}
-\warning{
-If the model specified by \code{formula} is singular then \code{glm2} may terminate with a message that a singular fit has been encountered. In this case, a non-singular (full rank) model must be passed to \code{formula}.
 }
 \value{
 The value returned by \code{glm2} has exactly the same documentation as the value returned by \code{glm}, except for:
