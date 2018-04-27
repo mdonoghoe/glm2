@@ -12,7 +12,7 @@ Fits generalized linear models using the same model specification as \code{glm} 
 Package: \tab glm2\cr
 Type: \tab Package\cr
 Version: \tab 1.2\cr
-Date: \tab 2017-11-28\cr
+Date: \tab 2018-04-27\cr
 License: \tab GPL (>=2)\cr
 LazyData: \tab true\cr
 }
