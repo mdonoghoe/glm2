@@ -12,7 +12,6 @@ Fits generalized linear models using the same model specification as \code{glm} 
 Package: \tab glm2\cr
 Type: \tab Package\cr
 Version: \tab 1.2\cr
-Date: \tab 2018-04-27\cr
 License: \tab GPL (>=2)\cr
 LazyData: \tab true\cr
 }
@@ -21,7 +20,7 @@ There are two functions in the package, \code{glm2} and \code{glm.fit2}. The \co
 \author{
 Ian Marschner (using code from \code{glm} and \code{glm.fit} in the \bold{stats} package)
 
-Maintainer: Ian Marschner \email{ian.marschner@mq.edu.au}
+Maintainer: Mark W. Donoghoe \email{markdonoghoe@gmail.com}
 }
 \references{
 Marschner, I.C. (2011) glm2: Fitting generalized linear models with convergence problems. The R Journal, Vol. 3/2, pp.12-15.
