@@ -53,11 +53,21 @@ function (formula, family = gaussian, data, weights, subset,
     }
     mustart <- model.extract(mf, "mustart")
     etastart <- model.extract(mf, "etastart")
-    fit <- eval(call(if (is.function(method)) "method" else method, 
-        x = X, y = Y, weights = weights, start = start, etastart = etastart, 
-        mustart = mustart, offset = offset, family = family, 
-        control = control, intercept = attr(mt, "intercept") > 
-            0L, singular.ok = singular.ok))
+    R.maj <- as.numeric(R.version$major)
+    R.min <- as.numeric(unlist(strsplit(R.version$minor, ".", TRUE))[1])
+    if (R.maj > 3 | (R.maj == 3 & R.min >= 5)) {
+      fit <- eval(call(if (is.function(method)) "method" else method, 
+          x = X, y = Y, weights = weights, start = start, etastart = etastart, 
+          mustart = mustart, offset = offset, family = family, 
+          control = control, intercept = attr(mt, "intercept") > 
+              0L, singular.ok = singular.ok))
+    } else {
+      fit <- eval(call(if (is.function(method)) "method" else method, 
+                       x = X, y = Y, weights = weights, start = start, etastart = etastart, 
+                       mustart = mustart, offset = offset, family = family, 
+                       control = control, intercept = attr(mt, "intercept") > 
+                         0L))
+    }
     if (length(offset) && attr(mt, "intercept") > 0L) {
         fit2 <- eval(call(if (is.function(method)) "method" else method, 
             x = X[, "(Intercept)", drop = FALSE], y = Y, weights = weights, 

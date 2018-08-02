@@ -60,7 +60,7 @@ as for \code{\link{glm}}
 as for \code{\link{glm}}
 }
   \item{singular.ok}{
-as for \code{\link{glm}}
+as for \code{\link{glm}}. NB this is ignored (and defaults to \code{TRUE}) for R version < 3.5.0.
 }
   \item{contrasts}{
 as for \code{\link{glm}}

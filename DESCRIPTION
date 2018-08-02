@@ -1,13 +1,13 @@
 Package: glm2
 Type: Package
 Title: Fitting Generalized Linear Models
-Version: 1.2
+Version: 1.2.1
 Authors@R: c(person("Ian", "Marschner", role = "aut", 
              email = "ian.marschner@mq.edu.au", 
              comment = "using code from glm and glm.fit in the stats package"),
              person("Mark W.", "Donoghoe", role = c("cre", "ctb"),
 			       email = "markdonoghoe@gmail.com"))
-Depends: R (>= 3.5.0), stats
+Depends: R (>= 3.2.0), stats
 Description: Fits generalized linear models using the same model specification as glm in the stats package, but with a modified default fitting method that provides greater stability for models that may fail to converge using glm.
 License: GPL (>=2)
 LazyData: true
