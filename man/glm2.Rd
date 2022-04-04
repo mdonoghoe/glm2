@@ -60,7 +60,7 @@ as for \code{\link{glm}}
 as for \code{\link{glm}}
 }
   \item{singular.ok}{
-as for \code{\link{glm}}. NB this is ignored (and defaults to \code{TRUE}) for R version < 3.5.0.
+as for \code{\link{glm}}. NB this is ignored (and defaults to \code{TRUE}) for R versions < 3.5.0.
 }
   \item{contrasts}{
 as for \code{\link{glm}}
@@ -101,7 +101,7 @@ data(heart)
 y <- c(1,1,1,0)
 # intercept estimate = log(0.75/0.25) = 1.098612
 
-#--- identitcal behaviour ---#
+#--- identical behaviour ---#
 fit1 <- glm(y ~ 1, family=binomial(link="logit"),
 	control=glm.control(trace=TRUE))
 fit2 <- glm2(y ~ 1, family=binomial(link="logit"),

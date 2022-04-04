@@ -62,6 +62,7 @@ function (formula, family = gaussian, data, weights, subset,
           control = control, intercept = attr(mt, "intercept") > 
               0L, singular.ok = singular.ok))
     } else {
+      if (!missing(singular.ok)) warning("singular.ok is ignored (defaults to TRUE) for R version < 3.5.0")
       fit <- eval(call(if (is.function(method)) "method" else method, 
                        x = X, y = Y, weights = weights, start = start, etastart = etastart, 
                        mustart = mustart, offset = offset, family = family, 
