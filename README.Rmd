@@ -1,0 +1,64 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, echo=FALSE,include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+require(glm2, quietly = TRUE)
+```
+
+# glm2
+
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/glm2)](https://cran.r-project.org/package=glm2)
+
+`glm2` fits generalized linear models using the same model specification as `glm` in the `stats` package, but with a modified default fitting method. The method provides greater stability for models that may fail to converge using `glm`.
+
+## Example
+
+An example of periodic non-convergence using `glm`:
+
+```{r}
+require(glm2, quietly = TRUE)
+data(crabs)
+
+fit1 <- glm(Satellites ~ I(Width - min(Width)) + factor(Dark) + factor(GoodSpine),
+            family = poisson(link = "identity"), start = rep(1, 4),
+            data = crabs, subset = Rep1, trace = TRUE)
+```
+
+The same model converges successfully with `glm2`:
+
+```{r}
+fit2 <- glm2(Satellites ~ I(Width - min(Width)) + factor(Dark) + factor(GoodSpine),
+             family = poisson(link = "identity"), start = rep(1, 4),
+             data = crabs, subset = Rep1, trace = TRUE)
+
+noquote(c("deviances: ", fit1$deviance, fit2$deviance))
+noquote(c("converged: ", fit1$converged, fit2$converged))
+```
+
+## Installation
+
+Get the released version from CRAN:
+
+```{r, eval = FALSE}
+install.packages("glm2")
+```
+
+Or the development version from github:
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("mdonoghoe/glm2")
+```
+
+## References
+
+* Marschner, I. C. (2011). glm2: Fitting generalized linear models with convergence problems. _The R Journal_ **3**(2): 12--15.
