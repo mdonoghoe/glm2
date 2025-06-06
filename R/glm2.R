@@ -60,7 +60,8 @@ function (formula, family = gaussian, data, weights, subset,
     
     if (!is.character(method) && !is.function(method)) 
         stop("invalid 'method' argument")
-    if (identical(method, "glm.fit2")) 
+    ## for back-compatibility in return result
+    if (identical(method, "glm.fit2") || identical(method, "glm.fit2.Matrix")) 
         control <- do.call("glm.control", control)
     
     mt <- attr(mf, "terms") # allow model.frame to have updated it
@@ -73,9 +74,17 @@ function (formula, family = gaussian, data, weights, subset,
         if (!is.null(nm)) 
             names(Y) <- nm
     }
-    X <- if (!is.empty.model(mt)) 
-        model.matrix(mt, mf, contrasts)
-    else matrix(, NROW(Y), 0L)
+    ## null model support
+    if (!is.empty.model(mt)) {
+        if (identical(method, "glm.fit2.Matrix")) {
+            if (!requireNamespace("Matrix", quietly = TRUE)) {
+                stop("Package \"Matrix\" must be installed to use method = \"glm.fit2.Matrix\".",
+                     call. = FALSE)
+            }
+            X <- Matrix::sparse.model.matrix(mt, mf, contrasts)
+            if (control$trace) cat("Created sparse model matrix\n")
+        } else X <- model.matrix(mt, mf, contrasts)
+    } else X <- matrix(, NROW(Y), 0L)
     ## avoid any problems with 1D or nx1 arrays by as.vector.
     weights <- as.vector(model.weights(mf))
     if (!is.null(weights) && !is.numeric(weights)) 

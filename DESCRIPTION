@@ -9,6 +9,7 @@ Authors@R: c(person("Ian", "Marschner", role = "aut"),
 			       person("The R Core Team", role = "cph",
 			       comment = "functions in this package are modified versions of stats::glm and related functions."))
 Depends: R (>= 3.2.0), stats
+Suggests: Matrix
 Description: Fits generalized linear models using the same model specification as glm in the stats package, but with a modified default fitting method that provides greater stability for models that may fail to converge using glm.
 License: GPL (>=2)
 LazyData: true
