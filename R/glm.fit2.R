@@ -1,4 +1,36 @@
+#  This function is based on File src/library/stats/R/glm.R
+#  Part of the R package, https://www.R-project.org
+#
+#  Modified by Ian C. Marschner, 2011-2017
+#  Modified by Mark W. Donoghoe:
+#    25/05/2018 - accept singular.ok argument
+
+
+#
+#  Copyright (C) 1995-2020 The R Core Team
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  https://www.R-project.org/Licenses/
+
 utils::globalVariables("n", add = TRUE)
+
+### Written by Simon Davies, Dec 1995
+### glm.fit modified by Thomas Lumley, Apr 1997, and then others..
+
+## Modified by Thomas Lumley 26 Apr 97
+## Added boundary checks and step halving
+## Modified detection of fitted 0/1 in binomial
+## Updated by KH as suggested by BDR on 1998/06/16
 
 glm.fit2 <- 
 function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
@@ -13,10 +45,13 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     nobs <- NROW(y)
     nvars <- ncol(x)
     EMPTY <- nvars == 0
+    ## define weights and offset if needed
     if (is.null(weights)) 
         weights <- rep.int(1, nobs)
     if (is.null(offset)) 
         offset <- rep.int(0, nobs)
+    
+    ## get family functions:
     variance <- family$variance
     linkinv <- family$linkinv
     if (!is.function(variance) || !is.function(linkinv)) 
@@ -29,6 +64,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     valideta <- unless.null(family$valideta, function(eta) TRUE)
     validmu <- unless.null(family$validmu, function(mu) TRUE)
     if (is.null(mustart)) {
+        ## calculates mustart and may change y and weights and set n (!)
         eval(family$initialize)
     }
     else {
@@ -42,6 +78,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             stop("invalid linear predictor values in empty model", 
                 call. = FALSE)
         mu <- linkinv(eta)
+        ## calculate initial deviance and coefficient
         if (!validmu(mu)) 
             stop("invalid fitted means in empty model", call. = FALSE)
         dev <- sum(dev.resids(y, mu, weights))
@@ -70,8 +107,11 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
         if (!(validmu(mu) && valideta(eta))) 
             stop("cannot find valid starting values: please specify some", 
                 call. = FALSE)
+        ## calculate initial deviance and coefficient
         devold <- sum(dev.resids(y, mu, weights))
         boundary <- conv <- FALSE
+        
+        ##------------- THE Iteratively Reweighting L.S. iteration -----------
         for (iter in 1L:control$maxit) {
             good <- weights > 0
             varmu <- variance(mu)[good]
@@ -82,7 +122,9 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             mu.eta.val <- mu.eta(eta)
             if (any(is.na(mu.eta.val[good]))) 
                 stop("NAs in d(mu)/d(eta)")
+            ## drop observations for which w will be zero
             good <- (weights > 0) & (mu.eta.val != 0)
+            
             if (all(!good)) {
                 conv <- FALSE
                 warning("no observations informative at iteration ", 
@@ -92,6 +134,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             z <- (eta - offset)[good] + (y - mu)[good]/mu.eta.val[good]
             w <- sqrt((weights[good] * mu.eta.val[good]^2)/variance(mu)[good])
             ngoodobs <- as.integer(nobs - sum(!good))
+            # Original glm.fit calls Fortran code
             fit <- lm.fit(x=x[good, , drop = FALSE]*w, y=z*w, singular.ok=TRUE, 
                           tol=min(1e-07, control$epsilon/1000))
             fit$coefficients[is.na(fit$coefficients)] <- 0
@@ -101,9 +144,11 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                   iter), domain = NA)
                 break
             }
+            ## stop if not enough parameters
             if (nobs < fit$rank) 
                 stop(gettextf("X matrix has rank %d, but only %d observations", 
                   fit$rank, nobs), domain = NA)
+            ## calculate updated values of eta and mu with the new coef:
             start <- fit$coefficients
             eta <- drop(x %*% start)
             mu <- linkinv(eta <- eta + offset)
@@ -111,6 +156,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             if (control$trace) 
                 cat("Deviance =", dev, "Iterations -", iter, 
                   "\n")
+            ## check for divergence
             boundary <- FALSE
             if (!is.finite(dev)) {
                 if (is.null(coefold)) 
@@ -133,6 +179,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                 if (control$trace) 
                   cat("Step halved: new deviance =", dev, "\n")
             }
+            ## check for fitted values outside domain.
             if (!(valideta(eta) && validmu(mu))) {
                 if (is.null(coefold)) 
                   stop("no valid set of coefficients has been found: please supply starting values", 
@@ -154,6 +201,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                 if (control$trace) 
                   cat("Step halved: new deviance =", dev, "\n")
             }
+            ## check for increasing deviance
             if (((dev - devold)/(0.1 + abs(dev)) >= control$epsilon)&(iter>1)) {
                 if (is.null(coefold)) 
                   stop("no valid set of coefficients has been found: please supply starting values", 
@@ -171,6 +219,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                 if (ii > control$maxit) warning("inner loop 3; cannot correct step size")
                 else if (control$trace) cat("Step halved: new deviance =", dev, "\n") 
             }
+            ## check for convergence
             if (abs(dev - devold)/(0.1 + abs(dev)) < control$epsilon) {
                 conv <- TRUE
                 coef <- start
@@ -180,7 +229,8 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                 devold <- dev
                 coef <- coefold <- start
             }
-        }
+        } ##-------------- end IRLS iteration -------------------------------
+        
         if (!conv) 
             warning("glm.fit2: algorithm did not converge. Try increasing the maximum iterations", call. = FALSE)
         if (boundary) 
@@ -197,11 +247,16 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                 warning("glm.fit2: fitted rates numerically 0 occurred", 
                   call. = FALSE)
         }
+        ## If X matrix was not full rank then columns were pivoted,
+        ## hence we need to re-label the names ...
+        ## Original code changed as suggested by BDR---give NA rather
+        ## than 0 for non-estimable parameters
         if (fit$rank < nvars) {
             if (!singular.ok) stop("singular fit encountered")
             coef[fit$qr$pivot][seq.int(fit$rank + 1, nvars)] <- NA
         }
         xxnames <- xnames[fit$qr$pivot]
+        ## update by accurate calculation, including 0-weight cases.
         residuals <- (y - mu)/mu.eta(eta)
         fit$qr$qr <- as.matrix(fit$qr$qr)
         nr <- min(sum(good), nvars)
@@ -219,19 +274,28 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     names(residuals) <- ynames
     names(mu) <- ynames
     names(eta) <- ynames
+    # for compatibility with lm, which has a full-length weights vector
     wt <- rep.int(0, nobs)
     wt[good] <- w^2
     names(wt) <- ynames
     names(weights) <- ynames
     names(y) <- ynames
-    if (!EMPTY) names(fit$effects) <- c(xxnames[seq_len(fit$rank)], rep.int("", sum(good) - fit$rank))
-    wtdmu <- if (intercept) sum(weights * y)/sum(weights) else linkinv(offset)
+    if (!EMPTY) 
+        names(fit$effects) <- 
+            c(xxnames[seq_len(fit$rank)], rep.int("", sum(good) - fit$rank))
+    ## calculate null deviance -- corrected in glm() if offset and intercept
+    wtdmu <- 
+        if (intercept) sum(weights * y)/sum(weights) else linkinv(offset)
     nulldev <- sum(dev.resids(y, wtdmu, weights))
+    ## calculate df
     n.ok <- nobs - sum(weights == 0)
     nulldf <- n.ok - as.integer(intercept)
     rank <- if (EMPTY) 0 else fit$rank
     resdf <- n.ok - rank
-    aic.model <- aic(y, n, mu, weights, dev) + 2 * rank
+    ## calculate AIC
+    aic.model <- 
+        aic(y, n, mu, weights, dev) + 2 * rank
+        ##     ^^ is only initialize()d for "binomial" [yuck!]
     list(coefficients = coef, residuals = residuals, fitted.values = mu, 
         effects = if (!EMPTY) fit$effects, R = if (!EMPTY) Rmat, 
         rank = rank, qr = if (!EMPTY) structure(fit$qr[c("qr", "rank", 
