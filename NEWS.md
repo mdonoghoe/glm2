@@ -1,3 +1,7 @@
+# glm2 1.2.1.9000 (under development)
+
+* Implemented `method = "glm.fit2.Matrix"`, for large design matrices.
+
 # glm2 1.2.1
 
 * Changed `glm2` to call the fit function without `singular.ok` when the R version is less than 3.5.0, allowing backwards compatibility to 3.2.0. (Thanks to Paul Bailey for the suggestion)
