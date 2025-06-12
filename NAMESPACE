@@ -2,3 +2,9 @@ importFrom("stats", ".getXlevels", "gaussian", "is.empty.model",
              "lm.fit", "model.extract", "model.matrix", "model.offset",
              "model.response", "model.weights")
 exportPattern("^[[:alpha:]]+")
+S3method(summary, glm2Matrix)
+S3method(vcov, glm2Matrix)
+S3method(vcov, summary.glm2Matrix)
+S3method(predict, glm2Matrix)
+S3method(influence, glm2Matrix)
+S3method(dfbetas, glm2Matrix)
