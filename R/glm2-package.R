@@ -29,7 +29,7 @@
 #' @references Marschner, I.C. (2011) glm2: Fitting generalized linear models
 #' with convergence problems. The R Journal, Vol. 3/2, pp.12-15.
 #' @keywords package
-NULL
+"_PACKAGE"
 
 #' Horseshoe Crab Data
 #' 

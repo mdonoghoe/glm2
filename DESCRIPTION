@@ -16,3 +16,4 @@ LazyData: true
 URL: https://github.com/mdonoghoe/glm2
 Date: 2025-06-13
 RoxygenNote: 7.3.2
+Encoding: UTF-8
