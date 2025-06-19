@@ -94,6 +94,7 @@ utils::globalVariables("n", add = TRUE)
 #' print.noquote(c(fit1$coef,fit2$coef))
 #' 
 #' 
+#' @importFrom stats gaussian lm.fit
 #' @export glm.fit2
 glm.fit2 <- 
 function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 

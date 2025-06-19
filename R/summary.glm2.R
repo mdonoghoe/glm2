@@ -22,6 +22,13 @@
 #  A copy of the GNU General Public License is available at
 #  https://www.R-project.org/Licenses/
 
+#' @title Summarizing Generalized Linear Model Fits
+#' @description Implementation of \code{\link[stats]{summary.glm}} for GLMs fit 
+#' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
+#' for more details. 
+#' @method summary glm2Matrix
+#' @export
+
 summary.glm2Matrix <- function(object, dispersion = NULL,
                                correlation = FALSE, symbolic.cor = FALSE, ...)
 {
@@ -119,8 +126,19 @@ summary.glm2Matrix <- function(object, dispersion = NULL,
 }
 
 ## Allow for 'dispersion' to be passed down (see the help for vcov)
+
+#' @title Calculate Variance-Covariance Matrix for a Fitted Model Object
+#' @description Implementation of \code{\link[stats]{vcov}} for GLMs fit 
+#' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
+#' for more details. 
+#' @method vcov glm2Matrix
+#' @export
+
 vcov.glm2Matrix <- function(object, complete = TRUE, ...)
   vcov(summary.glm2Matrix(object, ...), complete = complete)
+
+#' @rdname vcov.glm2Matrix
+#' @exportS3Method vcov summary.glm2Matrix
 
 vcov.summary.glm2Matrix <- function(object, complete = TRUE, ...)
   .vcov.aliased.Matrix(object$aliased, object$cov.scaled, complete = complete)

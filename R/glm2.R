@@ -208,6 +208,8 @@
 #' noquote(c("converged: ",fit1$conv,fit2$conv))
 #' 
 #' 
+#' @importFrom stats .getXlevels is.empty.model model.extract model.matrix
+#' model.offset model.response model.weights
 #' @export glm2
 glm2 <- 
 function (formula, family = gaussian, data, weights, subset, 

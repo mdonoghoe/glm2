@@ -21,6 +21,14 @@
 #  A copy of the GNU General Public License is available at
 #  https://www.R-project.org/Licenses/
 
+#' @title Predict Method for Fits
+#' @description Implementation of \code{\link[stats]{predict.glm}} for GLMs fit 
+#' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
+#' for more details. 
+#' @method predict glm2Matrix
+#' @importFrom stats model.offset
+#' @export
+
 predict.glm2Matrix <-
   function(object, newdata = NULL, type = c("link", "response", "terms"),
            se.fit = FALSE, dispersion = NULL, terms = NULL,
@@ -92,6 +100,8 @@ predict.glm2Matrix <-
 
   }
 
+#' @noRd
+#' @method predict lm.Matrix
 predict.lm.Matrix <-
   function(object, newdata, se.fit = FALSE, scale = NULL, df = Inf,
            interval = c("none", "confidence", "prediction"),
