@@ -26,47 +26,49 @@ glm2(
 )
 }
 \arguments{
-\item{formula}{as for \code{\link{glm}}}
+\item{formula}{as for \code{\link[stats]{glm}}}
 
-\item{family}{as for \code{\link{glm}}}
+\item{family}{as for \code{\link[stats]{glm}}}
 
-\item{data}{as for \code{\link{glm}}}
+\item{data}{as for \code{\link[stats]{glm}}}
 
-\item{weights}{as for \code{\link{glm}}}
+\item{weights}{as for \code{\link[stats]{glm}}}
 
-\item{subset}{as for \code{\link{glm}}}
+\item{subset}{as for \code{\link[stats]{glm}}}
 
-\item{na.action}{as for \code{\link{glm}}}
+\item{na.action}{as for \code{\link[stats]{glm}}}
 
-\item{start}{as for \code{\link{glm}}}
+\item{start}{as for \code{\link[stats]{glm}}}
 
-\item{etastart}{as for \code{\link{glm}}}
+\item{etastart}{as for \code{\link[stats]{glm}}}
 
-\item{mustart}{as for \code{\link{glm}}}
+\item{mustart}{as for \code{\link[stats]{glm}}}
 
-\item{offset}{as for \code{\link{glm}}}
+\item{offset}{as for \code{\link[stats]{glm}}}
 
-\item{control}{as for \code{\link{glm}} except by default \code{control} is
+\item{control}{as for \code{\link[stats]{glm}} except by default \code{control} is
 passed to \code{glm.fit2} instead of \code{glm.fit}}
 
-\item{model}{as for \code{\link{glm}}}
+\item{model}{as for \code{\link[stats]{glm}}}
 
 \item{method}{the method used in fitting the model. The default method
 \code{"glm.fit2"} uses iteratively reweighted least squares with modified
 step-halving that forces the deviance to decrease at each iteration; see
-help documentation for \code{glm.fit2}. As in \code{glm}, the alternative
+help documentation for \code{\link{glm.fit2}}. \code{method = "\link{glm.fit2.Matrix}"}
+uses the same algorithm but may be more efficient for large, sparse models by
+employing the \bold{Matrix} package. As in \code{glm}, the alternative
 method \code{"model.frame"} returns the model frame and does no fitting.}
 
-\item{x}{as for \code{\link{glm}}}
+\item{x}{as for \code{\link[stats]{glm}}}
 
-\item{y}{as for \code{\link{glm}}}
+\item{y}{as for \code{\link[stats]{glm}}}
 
-\item{singular.ok}{as for \code{\link{glm}}. NB this is ignored (and
+\item{singular.ok}{as for \code{\link[stats]{glm}}. NB this is ignored (and
 defaults to \code{TRUE}) for R versions < 3.5.0.}
 
-\item{contrasts}{as for \code{\link{glm}}}
+\item{contrasts}{as for \code{\link[stats]{glm}}}
 
-\item{\dots}{as for \code{\link{glm}}}
+\item{\dots}{as for \code{\link[stats]{glm}}}
 }
 \value{
 The value returned by \code{glm2} has exactly the same documentation
@@ -224,7 +226,7 @@ Marschner, I.C. (2011) glm2: Fitting generalized linear models
 with convergence problems. The R Journal, Vol. 3/2, pp.12-15.
 }
 \seealso{
-\code{\link{glm}}
+\code{\link[stats]{glm}}
 }
 \author{
 \code{glm2} uses the code from \code{glm}, whose authors are listed

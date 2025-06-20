@@ -32,15 +32,15 @@ utils::globalVariables("n", add = TRUE)
 ## Modified detection of fitted 0/1 in binomial
 ## Updated by KH as suggested by BDR on 1998/06/16
 
-
-
 #' Generalized Linear Models Fitting Method
 #' 
 #' \code{glm.fit2} is identical to \code{glm.fit} in the \bold{stats} package,
 #' except for a modification to the computational method that provides improved
 #' convergence properties. It is the default fitting method for \code{glm2} and
 #' can also be used as an alternative fitting method for \code{glm}, instead of
-#' the default method \code{glm.fit}.
+#' the default method \code{glm.fit}. \code{glm.fit2.Matrix} is similar, but
+#' allows for the model matrix \code{x} to be supplied as a sparse 
+#' \code{\link[Matrix]{Matrix}}, allowing for greater efficiency with large data.
 #' 
 #' \code{glm.fit2} is a modified version of \code{glm.fit} in the \bold{stats}
 #' package. The computational method in \code{glm.fit2} uses a stricter form of
@@ -59,23 +59,37 @@ utils::globalVariables("n", add = TRUE)
 #' \code{glm.fit}. See Marschner (2011) for a discussion of the need for a
 #' modified fitting method.
 #' 
-#' @param x as for \code{\link{glm.fit}}
-#' @param y as for \code{\link{glm.fit}}
-#' @param weights as for \code{\link{glm.fit}}
-#' @param start as for \code{\link{glm.fit}}
-#' @param etastart as for \code{\link{glm.fit}}
-#' @param mustart as for \code{\link{glm.fit}}
-#' @param offset as for \code{\link{glm.fit}}
-#' @param family as for \code{\link{glm.fit}}
-#' @param control as for \code{\link{glm.fit}}
-#' @param intercept as for \code{\link{glm.fit}}
-#' @param singular.ok as for \code{\link{glm.fit}}
+#' \code{glm.fit2.Matrix} uses the same algorithm as \code{glm.fit2}, but 
+#' employs \link[Matrix:qr-methods]{QR Factorization methods} from the 
+#' \bold{Matrix} package, which are more computationally efficient with large, 
+#' sparse model matrices. When calling via \code{\link{glm2}}, this is generated
+#' using \code{\link[Matrix:sparse.model.matrix]{Matrix::sparse.model.matrix}}. 
+#' If you are calling \code{glm.fit2.Matrix} directly, ideally you should supply 
+#' a Matrix object. This approach will not be as efficient if called using 
+#' \code{glm(..., method = "glm.fit2.Matrix")}.
+#' 
+#' @param x as for \code{\link[stats]{glm.fit}}; a sparse \code{\link[Matrix]{Matrix}} 
+#' for \code{glm.fit2.Matrix}
+#' @param y as for \code{\link[stats]{glm.fit}}
+#' @param weights as for \code{\link[stats]{glm.fit}}
+#' @param start as for \code{\link[stats]{glm.fit}}
+#' @param etastart as for \code{\link[stats]{glm.fit}}
+#' @param mustart as for \code{\link[stats]{glm.fit}}
+#' @param offset as for \code{\link[stats]{glm.fit}}
+#' @param family as for \code{\link[stats]{glm.fit}}
+#' @param control as for \code{\link[stats]{glm.fit}}
+#' @param intercept as for \code{\link[stats]{glm.fit}}
+#' @param singular.ok as for \code{\link[stats]{glm.fit}}. For 
+#' \code{glm.fit2.Matrix} it is ideal if you first ensure there are no linear 
+#' dependencies and use \code{singular.ok = FALSE}
+#' 
 #' @return The value returned by \code{glm.fit2} has exactly the same
-#' documentation as the value returned by \code{glm.fit}.
+#' documentation as the value returned by \code{glm.fit}. The value returned by
+#' \code{glm.fit2.Matrix} is slightly different in some details.
 #' @author \code{glm.fit2} uses the code from \code{glm.fit}, whose authors are
 #' listed in the help documentation for the \bold{stats} package. Modifications
 #' to this code were made by Ian Marschner.
-#' @seealso \code{\link{glm.fit}}
+#' @seealso \code{\link[stats]{glm.fit}}
 #' @references Marschner, I.C. (2011) glm2: Fitting generalized linear models
 #' with convergence problems. The R Journal, Vol. 3/2, pp.12-15.
 #' @examples
@@ -93,7 +107,7 @@ utils::globalVariables("n", add = TRUE)
 #' fit2 <- glm.fit2(x,y, family=binomial(link="logit"),start=-1.81)
 #' print.noquote(c(fit1$coef,fit2$coef))
 #' 
-#' 
+#' @aliases glm.fit2.Matrix
 #' @importFrom stats gaussian lm.fit
 #' @export glm.fit2
 glm.fit2 <- 

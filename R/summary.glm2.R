@@ -143,7 +143,7 @@ vcov.glm2Matrix <- function(object, complete = TRUE, ...)
 vcov.summary.glm2Matrix <- function(object, complete = TRUE, ...)
   .vcov.aliased.Matrix(object$aliased, object$cov.scaled, complete = complete)
 
-##' Augment a vcov - matrix by NA rows & cols when needed:
+## Augment a vcov - matrix by NA rows & cols when needed:
 .vcov.aliased.Matrix <- function(aliased, vc, complete = TRUE) {
   ## Checking for "NA coef": "same" code as in print.summary.lm() in ./lm.R :
   if(complete && NROW(vc) < (P <- length(aliased)) && any(aliased)) {

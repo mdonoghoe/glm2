@@ -47,30 +47,32 @@
 #' string naming a function to the \code{method} argument. See Marschner (2011)
 #' for a discussion of the need for a modified fitting method.
 #' 
-#' @param formula as for \code{\link{glm}}
-#' @param family as for \code{\link{glm}}
-#' @param data as for \code{\link{glm}}
-#' @param weights as for \code{\link{glm}}
-#' @param subset as for \code{\link{glm}}
-#' @param na.action as for \code{\link{glm}}
-#' @param start as for \code{\link{glm}}
-#' @param etastart as for \code{\link{glm}}
-#' @param mustart as for \code{\link{glm}}
-#' @param offset as for \code{\link{glm}}
-#' @param control as for \code{\link{glm}} except by default \code{control} is
+#' @param formula as for \code{\link[stats]{glm}}
+#' @param family as for \code{\link[stats]{glm}}
+#' @param data as for \code{\link[stats]{glm}}
+#' @param weights as for \code{\link[stats]{glm}}
+#' @param subset as for \code{\link[stats]{glm}}
+#' @param na.action as for \code{\link[stats]{glm}}
+#' @param start as for \code{\link[stats]{glm}}
+#' @param etastart as for \code{\link[stats]{glm}}
+#' @param mustart as for \code{\link[stats]{glm}}
+#' @param offset as for \code{\link[stats]{glm}}
+#' @param control as for \code{\link[stats]{glm}} except by default \code{control} is
 #' passed to \code{glm.fit2} instead of \code{glm.fit}
-#' @param model as for \code{\link{glm}}
+#' @param model as for \code{\link[stats]{glm}}
 #' @param method the method used in fitting the model. The default method
 #' \code{"glm.fit2"} uses iteratively reweighted least squares with modified
 #' step-halving that forces the deviance to decrease at each iteration; see
-#' help documentation for \code{glm.fit2}. As in \code{glm}, the alternative
+#' help documentation for \code{\link{glm.fit2}}. \code{method = "\link{glm.fit2.Matrix}"}
+#' uses the same algorithm but may be more efficient for large, sparse models by
+#' employing the \bold{Matrix} package. As in \code{glm}, the alternative
 #' method \code{"model.frame"} returns the model frame and does no fitting.
-#' @param x as for \code{\link{glm}}
-#' @param y as for \code{\link{glm}}
-#' @param singular.ok as for \code{\link{glm}}. NB this is ignored (and
+#' @param x as for \code{\link[stats]{glm}}
+#' @param y as for \code{\link[stats]{glm}}
+#' @param singular.ok as for \code{\link[stats]{glm}}. NB this is ignored (and
 #' defaults to \code{TRUE}) for R versions < 3.5.0.
-#' @param contrasts as for \code{\link{glm}}
-#' @param \dots as for \code{\link{glm}}
+#' @param contrasts as for \code{\link[stats]{glm}}
+#' @param \dots as for \code{\link[stats]{glm}}
 #' @return The value returned by \code{glm2} has exactly the same documentation
 #' as the value returned by \code{glm}, except for:
 #' 
@@ -79,7 +81,7 @@
 #' @author \code{glm2} uses the code from \code{glm}, whose authors are listed
 #' in the help documentation for the \bold{stats} package. Modifications to
 #' this code were made by Ian Marschner.
-#' @seealso \code{\link{glm}}
+#' @seealso \code{\link[stats]{glm}}
 #' @references Marschner, I.C. (2011) glm2: Fitting generalized linear models
 #' with convergence problems. The R Journal, Vol. 3/2, pp.12-15.
 #' @examples
