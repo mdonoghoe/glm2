@@ -5,7 +5,6 @@
 #    31/01/2025 - error for glm.fit2.Matrix
 #
 
-
 #  Copyright (C) 1995-2012 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -24,11 +23,39 @@
 ### "lm"  *and*	 "glm"	 leave-one-out influence measures
 
 ## The following is adapted from John Fox's  "car" :
+
+
+#' Regression Diagnostics (not yet implemented)
+#'
+#' @description This method is a placeholder. The \code{\link[stats]{influence}}
+#' method for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")} 
+#' is not yet implemented.
+#' 
+#' @usage NULL
+#'
+#' @return An error indicating the method is not implemented.
+#' @method influence glm2Matrix
+#' @importFrom stats influence
+#' @export
+
 influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
   
   stop("influence measures not implemented for glm.fit2.Matrix")
   
 }
+
+#' Regression Deletion Diagnostics (not yet implemented)
+#'
+#' @description This method is a placeholder. The \code{\link[stats]{dfbetas}}
+#' method for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")} 
+#' is not yet implemented.
+#' 
+#' @usage NULL
+#'
+#' @return An error indicating the method is not implemented.
+#' @method dfbetas glm2Matrix
+#' @importFrom stats dfbetas lm.influence
+#' @export
 
 dfbetas.glm2Matrix <- function (model, infl = lm.influence(model, do.coef=TRUE), ...)
 {

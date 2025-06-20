@@ -22,6 +22,15 @@
 #  A copy of the GNU General Public License is available at
 #  https://www.R-project.org/Licenses/
 
+#' @title Summarizing Generalized Linear Model Fits
+#' @description Implementation of \code{\link[stats]{summary.glm}} for GLMs fit 
+#' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
+#' for full details. 
+#' @usage NULL
+#' @method summary glm2Matrix
+#' @importFrom stats coef pnorm pt residuals
+#' @export
+
 summary.glm2Matrix <- function(object, dispersion = NULL,
                                correlation = FALSE, symbolic.cor = FALSE, ...)
 {
@@ -119,13 +128,27 @@ summary.glm2Matrix <- function(object, dispersion = NULL,
 }
 
 ## Allow for 'dispersion' to be passed down (see the help for vcov)
+
+#' @title Calculate Variance-Covariance Matrix for a Fitted Model Object
+#' @description Implementation of \code{\link[stats]{vcov}} for GLMs fit 
+#' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
+#' for full details. 
+#' @usage NULL
+#' @method vcov glm2Matrix
+#' @importFrom stats vcov
+#' @export
+
 vcov.glm2Matrix <- function(object, complete = TRUE, ...)
   vcov(summary.glm2Matrix(object, ...), complete = complete)
+
+#' @rdname vcov.glm2Matrix
+#' @usage NULL
+#' @exportS3Method vcov summary.glm2Matrix
 
 vcov.summary.glm2Matrix <- function(object, complete = TRUE, ...)
   .vcov.aliased.Matrix(object$aliased, object$cov.scaled, complete = complete)
 
-##' Augment a vcov - matrix by NA rows & cols when needed:
+## Augment a vcov - matrix by NA rows & cols when needed:
 .vcov.aliased.Matrix <- function(aliased, vc, complete = TRUE) {
   ## Checking for "NA coef": "same" code as in print.summary.lm() in ./lm.R :
   if(complete && NROW(vc) < (P <- length(aliased)) && any(aliased)) {

@@ -32,6 +32,84 @@ utils::globalVariables("n", add = TRUE)
 ## Modified detection of fitted 0/1 in binomial
 ## Updated by KH as suggested by BDR on 1998/06/16
 
+#' Generalized Linear Models Fitting Method
+#' 
+#' \code{glm.fit2} is identical to \code{glm.fit} in the \bold{stats} package,
+#' except for a modification to the computational method that provides improved
+#' convergence properties. It is the default fitting method for \code{glm2} and
+#' can also be used as an alternative fitting method for \code{glm}, instead of
+#' the default method \code{glm.fit}. \code{glm.fit2.Matrix} is similar, but
+#' allows for the model matrix \code{x} to be supplied as a sparse 
+#' \code{\link[Matrix]{Matrix}}, allowing for greater efficiency with large data.
+#' 
+#' \code{glm.fit2} is a modified version of \code{glm.fit} in the \bold{stats}
+#' package. The computational method in \code{glm.fit2} uses a stricter form of
+#' step-halving to deal with numerical instability in the iteratively
+#' reweighted least squares algorithm. Whereas \code{glm.fit} uses step-halving
+#' to correct divergence and parameter space violations, \code{glm.fit2}
+#' additionally uses step-halving to force the model deviance to decrease at
+#' each iteration, which improves the convergence properties. Like
+#' \code{glm.fit}, \code{glm.fit2} usually would not be called directly.
+#' Instead, it is called by \code{glm2} as the default fitting method. Like
+#' \code{glm.fit}, it is possible to call \code{glm.fit2} directly if the
+#' response vector and design matrix have already been calculated, in which
+#' case it may be more efficient than calling \code{glm2}. It can also be
+#' passed to \code{glm} in the \bold{stats} package, using the \code{method}
+#' argument, providing an alternative to the default fitting method
+#' \code{glm.fit}. See Marschner (2011) for a discussion of the need for a
+#' modified fitting method.
+#' 
+#' \code{glm.fit2.Matrix} uses the same algorithm as \code{glm.fit2}, but 
+#' employs \link[Matrix:qr-methods]{QR Factorization methods} from the 
+#' \bold{Matrix} package, which are more computationally efficient with large, 
+#' sparse model matrices. When calling via \code{\link{glm2}}, this is generated
+#' using \code{\link[Matrix:sparse.model.matrix]{Matrix::sparse.model.matrix}}. 
+#' If you are calling \code{glm.fit2.Matrix} directly, ideally you should supply 
+#' a Matrix object. This approach will not be as efficient if called using 
+#' \code{glm(..., method = "glm.fit2.Matrix")}.
+#' 
+#' @param x as for \code{\link[stats]{glm.fit}}; a sparse \code{\link[Matrix]{Matrix}} 
+#' for \code{glm.fit2.Matrix}
+#' @param y as for \code{\link[stats]{glm.fit}}
+#' @param weights as for \code{\link[stats]{glm.fit}}
+#' @param start as for \code{\link[stats]{glm.fit}}
+#' @param etastart as for \code{\link[stats]{glm.fit}}
+#' @param mustart as for \code{\link[stats]{glm.fit}}
+#' @param offset as for \code{\link[stats]{glm.fit}}
+#' @param family as for \code{\link[stats]{glm.fit}}
+#' @param control as for \code{\link[stats]{glm.fit}}
+#' @param intercept as for \code{\link[stats]{glm.fit}}
+#' @param singular.ok as for \code{\link[stats]{glm.fit}}. For 
+#' \code{glm.fit2.Matrix} it is ideal if you first ensure there are no linear 
+#' dependencies and use \code{singular.ok = FALSE}
+#' 
+#' @return The value returned by \code{glm.fit2} has exactly the same
+#' documentation as the value returned by \code{glm.fit}. The value returned by
+#' \code{glm.fit2.Matrix} is slightly different in some details.
+#' @author \code{glm.fit2} uses the code from \code{glm.fit}, whose authors are
+#' listed in the help documentation for the \bold{stats} package. Modifications
+#' to this code were made by Ian Marschner.
+#' @seealso \code{\link[stats]{glm.fit}}
+#' @references Marschner, I.C. (2011) glm2: Fitting generalized linear models
+#' with convergence problems. The R Journal, Vol. 3/2, pp.12-15.
+#' @examples
+#' 
+#' library(glm2)
+#' 
+#' #--- logistic regression null model ---------------#
+#' # (intercept estimate = log(0.75/0.25) = 1.098612)
+#' 
+#' y <- c(1,1,1,0)
+#' x <- rep(1,4)
+#' 
+#' #--- divergence of glm.fit to infinite estimate ---#
+#' fit1 <- glm.fit(x,y, family=binomial(link="logit"),start=-1.81)
+#' fit2 <- glm.fit2(x,y, family=binomial(link="logit"),start=-1.81)
+#' print.noquote(c(fit1$coef,fit2$coef))
+#' 
+#' @aliases glm.fit2.Matrix
+#' @importFrom stats gaussian lm.fit
+#' @export glm.fit2
 glm.fit2 <- 
 function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
     mustart = NULL, offset = rep(0, nobs), family = gaussian(), 

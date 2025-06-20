@@ -10,8 +10,10 @@ Authors@R: c(person("Ian", "Marschner", role = "aut"),
 			       person("The R Core Team", role = "cph",
 			       comment = "functions in this package are modified versions of stats::glm and related functions."))
 Depends: R (>= 3.2.0), stats
-Suggests: Matrix
+Suggests: Matrix, methods
 License: GPL (>=2)
 LazyData: true
 URL: https://github.com/mdonoghoe/glm2
-Date: 2025-06-13
+Date: 2025-06-20
+RoxygenNote: 7.3.2
+Encoding: UTF-8

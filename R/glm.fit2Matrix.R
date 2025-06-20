@@ -33,6 +33,10 @@ utils::globalVariables("n", add = TRUE)
 ## Modified detection of fitted 0/1 in binomial
 ## Updated by KH as suggested by BDR on 1998/06/16
 
+#' @rdname glm.fit2
+#' @importFrom stats gaussian
+#' @export
+
 glm.fit2.Matrix <- 
   function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
             mustart = NULL, offset = rep(0, nobs), family = gaussian(), 
@@ -43,7 +47,7 @@ glm.fit2.Matrix <-
            call. = FALSE)
     }
     control <- do.call("glm.control", control)
-    if(!is(x, "sparseMatrix")) {
+    if(!methods::is(x, "sparseMatrix")) {
       warning("Creating sparse model matrix from dense x. May not be very efficient.", 
               call. = FALSE)
       x <- Matrix::Matrix(x, sparse = TRUE) 
