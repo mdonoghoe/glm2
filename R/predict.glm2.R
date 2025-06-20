@@ -24,7 +24,10 @@
 #' @title Predict Method for Fits
 #' @description Implementation of \code{\link[stats]{predict.glm}} for GLMs fit 
 #' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
-#' for more details. 
+#' for full details. 
+#' 
+#' @usage NULL
+#' 
 #' @method predict glm2Matrix
 #' @importFrom stats model.offset na.pass napredict family predict.glm 
 #' @export

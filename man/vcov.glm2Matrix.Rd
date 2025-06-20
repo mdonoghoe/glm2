@@ -4,13 +4,8 @@
 \alias{vcov.glm2Matrix}
 \alias{vcov.summary.glm2Matrix}
 \title{Calculate Variance-Covariance Matrix for a Fitted Model Object}
-\usage{
-\method{vcov}{glm2Matrix}(object, complete = TRUE, ...)
-
-\method{vcov}{summary.glm2Matrix}(object, complete = TRUE, ...)
-}
 \description{
 Implementation of \code{\link[stats]{vcov}} for GLMs fit 
 using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
-for more details.
+for full details.
 }

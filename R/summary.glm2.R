@@ -25,7 +25,8 @@
 #' @title Summarizing Generalized Linear Model Fits
 #' @description Implementation of \code{\link[stats]{summary.glm}} for GLMs fit 
 #' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
-#' for more details. 
+#' for full details. 
+#' @usage NULL
 #' @method summary glm2Matrix
 #' @importFrom stats coef pnorm pt residuals
 #' @export
@@ -131,7 +132,8 @@ summary.glm2Matrix <- function(object, dispersion = NULL,
 #' @title Calculate Variance-Covariance Matrix for a Fitted Model Object
 #' @description Implementation of \code{\link[stats]{vcov}} for GLMs fit 
 #' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
-#' for more details. 
+#' for full details. 
+#' @usage NULL
 #' @method vcov glm2Matrix
 #' @importFrom stats vcov
 #' @export
@@ -140,6 +142,7 @@ vcov.glm2Matrix <- function(object, complete = TRUE, ...)
   vcov(summary.glm2Matrix(object, ...), complete = complete)
 
 #' @rdname vcov.glm2Matrix
+#' @usage NULL
 #' @exportS3Method vcov summary.glm2Matrix
 
 vcov.summary.glm2Matrix <- function(object, complete = TRUE, ...)

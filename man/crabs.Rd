@@ -6,14 +6,17 @@
 \title{Horseshoe Crab Data}
 \format{
 A data frame with 173 observations on the following 6 variables:
-\describe{ \item{list("Satellites")}{number of male partners in addition to
-the female's primary partner} \item{list("Width")}{width of the female in
-centimeters} \item{list("Dark")}{a binary factor indicating whether the
-female has dark coloring (\code{yes} or \code{no})}
-\item{list("GoodSpine")}{a binary factor indicating whether the female has
-good spine condition (\code{yes} or \code{no})} \item{list("Rep1")}{a random
-sample with replacement from 1:173} \item{list("Rep2")}{a second random
-sample with replacement from 1:173} }
+\describe{ 
+\item{Satellites}{number of male partners in addition to the female's primary 
+partner} 
+\item{Width}{width of the female in centimeters} 
+\item{Dark}{a binary factor indicating whether the female has dark coloring 
+(\code{yes} or \code{no})}
+\item{GoodSpine}{a binary factor indicating whether the female has
+good spine condition (\code{yes} or \code{no})} 
+\item{Rep1}{a random sample with replacement from 1:173} 
+\item{Rep2}{a second random sample with replacement from 1:173} 
+}
 }
 \description{
 This data set is derived from Agresti (2007, Table 3.2, pp.76-77). It gives

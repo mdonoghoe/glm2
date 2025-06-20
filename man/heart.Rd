@@ -6,13 +6,16 @@
 \title{Heart Attack Data}
 \format{
 A data frame with 74 observations on the following 6 variables.
-\describe{ \item{list("Deaths")}{number of deaths}
-\item{list("Patients")}{number of patients}
-\item{list("AgeGroup")}{categorization of the age of the patients}
-\item{list("Severity")}{severity of the heart attack}
-\item{list("Delay")}{categorization of the time from heart attack to
-treatment} \item{list("Region")}{geographical region in which the patients
-were treated} }
+\describe{ 
+\item{Deaths}{number of deaths}
+\item{Patients}{number of patients}
+\item{AgeGroup}{categorization of the age of the patients}
+\item{Severity}{severity of the heart attack}
+\item{Delay}{categorization of the time from heart attack to
+treatment}
+\item{Region}{geographical region in which the patients
+were treated} 
+}
 }
 \description{
 This data set is a cross-tabulation of data on 16949 individuals who

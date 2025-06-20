@@ -3,9 +3,6 @@
 \name{dfbetas.glm2Matrix}
 \alias{dfbetas.glm2Matrix}
 \title{Regression Deletion Diagnostics (not yet implemented)}
-\usage{
-\method{dfbetas}{glm2Matrix}(model, infl = lm.influence(model, do.coef = TRUE), ...)
-}
 \value{
 An error indicating the method is not implemented.
 }

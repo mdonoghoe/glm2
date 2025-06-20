@@ -49,14 +49,17 @@
 #' @name crabs
 #' @docType data
 #' @format A data frame with 173 observations on the following 6 variables:
-#' \describe{ \item{list("Satellites")}{number of male partners in addition to
-#' the female's primary partner} \item{list("Width")}{width of the female in
-#' centimeters} \item{list("Dark")}{a binary factor indicating whether the
-#' female has dark coloring (\code{yes} or \code{no})}
-#' \item{list("GoodSpine")}{a binary factor indicating whether the female has
-#' good spine condition (\code{yes} or \code{no})} \item{list("Rep1")}{a random
-#' sample with replacement from 1:173} \item{list("Rep2")}{a second random
-#' sample with replacement from 1:173} }
+#' \describe{ 
+#' \item{Satellites}{number of male partners in addition to the female's primary 
+#' partner} 
+#' \item{Width}{width of the female in centimeters} 
+#' \item{Dark}{a binary factor indicating whether the female has dark coloring 
+#' (\code{yes} or \code{no})}
+#' \item{GoodSpine}{a binary factor indicating whether the female has
+#' good spine condition (\code{yes} or \code{no})} 
+#' \item{Rep1}{a random sample with replacement from 1:173} 
+#' \item{Rep2}{a second random sample with replacement from 1:173} 
+#' }
 #' @references Agresti, A. (2007) An Introduction to Categorical Data Analysis
 #' (2nd ed.). Hoboken, NJ: Wiley.
 #' @keywords datasets
@@ -85,13 +88,16 @@ NULL
 #' @name heart
 #' @docType data
 #' @format A data frame with 74 observations on the following 6 variables.
-#' \describe{ \item{list("Deaths")}{number of deaths}
-#' \item{list("Patients")}{number of patients}
-#' \item{list("AgeGroup")}{categorization of the age of the patients}
-#' \item{list("Severity")}{severity of the heart attack}
-#' \item{list("Delay")}{categorization of the time from heart attack to
-#' treatment} \item{list("Region")}{geographical region in which the patients
-#' were treated} }
+#' \describe{ 
+#' \item{Deaths}{number of deaths}
+#' \item{Patients}{number of patients}
+#' \item{AgeGroup}{categorization of the age of the patients}
+#' \item{Severity}{severity of the heart attack}
+#' \item{Delay}{categorization of the time from heart attack to
+#' treatment}
+#' \item{Region}{geographical region in which the patients
+#' were treated} 
+#' }
 #' @references ASSENT-2 Investigators. (1999) Single-bolus tenecteplase
 #' compared with front-loaded alteplase in acute myocardial infraction: The
 #' ASSENT-2 double-blind randomized trial. Lancet 354, 716-722.

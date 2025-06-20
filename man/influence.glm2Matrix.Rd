@@ -3,9 +3,6 @@
 \name{influence.glm2Matrix}
 \alias{influence.glm2Matrix}
 \title{Regression Diagnostics (not yet implemented)}
-\usage{
-\method{influence}{glm2Matrix}(model, do.coef = TRUE, ...)
-}
 \value{
 An error indicating the method is not implemented.
 }

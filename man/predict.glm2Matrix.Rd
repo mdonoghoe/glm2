@@ -3,20 +3,8 @@
 \name{predict.glm2Matrix}
 \alias{predict.glm2Matrix}
 \title{Predict Method for Fits}
-\usage{
-\method{predict}{glm2Matrix}(
-  object,
-  newdata = NULL,
-  type = c("link", "response", "terms"),
-  se.fit = FALSE,
-  dispersion = NULL,
-  terms = NULL,
-  na.action = na.pass,
-  ...
-)
-}
 \description{
 Implementation of \code{\link[stats]{predict.glm}} for GLMs fit 
 using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
-for more details.
+for full details.
 }

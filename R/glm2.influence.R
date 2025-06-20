@@ -30,6 +30,8 @@
 #' @description This method is a placeholder. The \code{\link[stats]{influence}}
 #' method for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")} 
 #' is not yet implemented.
+#' 
+#' @usage NULL
 #'
 #' @return An error indicating the method is not implemented.
 #' @method influence glm2Matrix
@@ -47,6 +49,8 @@ influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
 #' @description This method is a placeholder. The \code{\link[stats]{dfbetas}}
 #' method for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")} 
 #' is not yet implemented.
+#' 
+#' @usage NULL
 #'
 #' @return An error indicating the method is not implemented.
 #' @method dfbetas glm2Matrix

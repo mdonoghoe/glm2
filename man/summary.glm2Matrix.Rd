@@ -3,17 +3,8 @@
 \name{summary.glm2Matrix}
 \alias{summary.glm2Matrix}
 \title{Summarizing Generalized Linear Model Fits}
-\usage{
-\method{summary}{glm2Matrix}(
-  object,
-  dispersion = NULL,
-  correlation = FALSE,
-  symbolic.cor = FALSE,
-  ...
-)
-}
 \description{
 Implementation of \code{\link[stats]{summary.glm}} for GLMs fit 
 using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
-for more details.
+for full details.
 }
