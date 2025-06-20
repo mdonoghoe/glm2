@@ -27,6 +27,7 @@
 #' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
 #' for more details. 
 #' @method summary glm2Matrix
+#' @importFrom stats coef pnorm pt residuals
 #' @export
 
 summary.glm2Matrix <- function(object, dispersion = NULL,
@@ -132,6 +133,7 @@ summary.glm2Matrix <- function(object, dispersion = NULL,
 #' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
 #' for more details. 
 #' @method vcov glm2Matrix
+#' @importFrom stats vcov
 #' @export
 
 vcov.glm2Matrix <- function(object, complete = TRUE, ...)

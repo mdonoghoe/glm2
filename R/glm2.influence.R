@@ -33,6 +33,7 @@
 #'
 #' @return An error indicating the method is not implemented.
 #' @method influence glm2Matrix
+#' @importFrom stats influence
 #' @export
 
 influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
@@ -49,6 +50,7 @@ influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
 #'
 #' @return An error indicating the method is not implemented.
 #' @method dfbetas glm2Matrix
+#' @importFrom stats dfbetas lm.influence
 #' @export
 
 dfbetas.glm2Matrix <- function (model, infl = lm.influence(model, do.coef=TRUE), ...)

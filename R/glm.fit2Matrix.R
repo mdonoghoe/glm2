@@ -47,7 +47,7 @@ glm.fit2.Matrix <-
            call. = FALSE)
     }
     control <- do.call("glm.control", control)
-    if(!is(x, "sparseMatrix")) {
+    if(!methods::is(x, "sparseMatrix")) {
       warning("Creating sparse model matrix from dense x. May not be very efficient.", 
               call. = FALSE)
       x <- Matrix::Matrix(x, sparse = TRUE) 

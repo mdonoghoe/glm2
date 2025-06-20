@@ -26,7 +26,7 @@
 #' using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. See its documentation
 #' for more details. 
 #' @method predict glm2Matrix
-#' @importFrom stats model.offset
+#' @importFrom stats model.offset na.pass napredict family predict.glm 
 #' @export
 
 predict.glm2Matrix <-
@@ -102,6 +102,8 @@ predict.glm2Matrix <-
 
 #' @noRd
 #' @method predict lm.Matrix
+#' @importFrom stats na.pass delete.response model.frame .checkMFClasses
+#' weights qt napredict
 predict.lm.Matrix <-
   function(object, newdata, se.fit = FALSE, scale = NULL, df = Inf,
            interval = c("none", "confidence", "prediction"),
@@ -163,7 +165,7 @@ predict.lm.Matrix <-
         tR <- Matrix::t(Matrix::qr.R(qrXf$qr))
         pp <- nrow(tR)
         if(verbose) cat(sprintf("  n=%d, p=%d < ncol(X)=%d; ncol(tR)=%d <?< pp=%d (=?= n)\n",
-                                n, p, full_p, ncol(tR), pp))
+                                n, p, ncol(X), ncol(tR), pp))
         if (ncol(tR) < pp) { # Add extra rows & cols if needed
           tR <- cbind(tR, Matrix::Matrix(0, nrow = pp, ncol = pp - ncol(tR), sparse = TRUE))
           if(verbose)
@@ -206,7 +208,7 @@ predict.lm.Matrix <-
       if (missing(newdata))
         warning("predictions on current data refer to _future_ responses\n")
       if (missing(newdata) && missing(weights)) {
-        w <-  weights.default(object)
+        w <-  weights(unclass(object))
         if (!is.null(w)) {
           weights <- w
           warning("assuming prediction variance inversely proportional to weights used for fitting\n")
@@ -269,8 +271,9 @@ predict.lm.Matrix <-
       }
       nterms <- length(asgn)
       if(nterms > 0) {
-        predictor <- as(Matrix::Matrix(NA, ncol = nterms, nrow = NROW(X), sparse = TRUE),
-                        "dMatrix")
+        predictor <- methods::as(Matrix::Matrix(NA, ncol = nterms, 
+                                                nrow = NROW(X), sparse = TRUE),
+                                 "dMatrix")
         dimnames(predictor) <- list(rownames(X), names(asgn))
         
         if (se.fit || interval != "none") {
