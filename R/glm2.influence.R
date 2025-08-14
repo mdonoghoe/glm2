@@ -227,22 +227,38 @@ naresid.Matrix <- function(omit, x, ...) {
 
 }
 
-#' Regression Deletion Diagnostics (not yet implemented)
+#' @rdname dfbetas.glm2Matrix
+#' @method dfbeta glm2Matrix
+#' @export
+
+dfbeta.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do.coef=TRUE), ...) {
+  b <- infl$coefficients
+  mlm <- is.matrix(wr <- infl$wt.res)
+  if (!mlm) dimnames(b) <- list(names(wr), variable.names(model))
+  b
+}
+
+#' Regression Deletion Diagnostics (partially implemented)
 #'
-#' @description This method is a placeholder. The \code{\link[stats]{dfbetas}}
-#' method for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")} 
-#' is not yet implemented.
-#' 
-#' @usage NULL
+#' @description A suite of functions computing regression (leave-one-out deletion)
+#' diagnostics for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. 
+#' Currently only \code{dfbetas} and \code{dfbeta} are implemented.
 #'
-#' @return An error indicating the method is not implemented.
+#' @return See documentation for \code{\link[stats]{influence.measures}}.
+#'
+#' @seealso \code{\link[stats]{influence.measures}}.
+#'
 #' @method dfbetas glm2Matrix
 #' @importFrom stats dfbetas lm.influence
 #' @export
 
-dfbetas.glm2Matrix <- function (model, infl = lm.influence(model, do.coef=TRUE), ...)
-{
+dfbetas.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do.coef=TRUE), ...) {
   
-  stop("dfbetas not implemented for glm.fit2.Matrix")
+  qrm <- model$qr
+  xxi <- Matrix::chol2inv(Matrix::qr.R(qrm$qr))
+  db <- dfbeta(model, infl)
+  if (length(dim(db)) == 3L) db <- aperm(db, c(1L, 3:2))
+  # Might need to fix this up if sigma is a Matrix
+  db / outer(infl$sigma, sqrt(Matrix::diag(xxi)))
   
 }

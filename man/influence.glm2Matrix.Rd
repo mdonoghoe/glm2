@@ -28,8 +28,7 @@ for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}.
 ## given in Belsley, Kuh and Welsch.
 summary(glm.SR <- glm2(sr ~ pop15 + pop75 + dpi + ddpi,
                        data = LifeCycleSavings,
-                       method = "glm.fit2.Matrix"),
-        correlation = TRUE)
+                       method = "glm.fit2.Matrix"))
 utils::str(glmI <- influence(glm.SR))
 
 }
