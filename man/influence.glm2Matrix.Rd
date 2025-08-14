@@ -2,12 +2,37 @@
 % Please edit documentation in R/glm2.influence.R
 \name{influence.glm2Matrix}
 \alias{influence.glm2Matrix}
-\title{Regression Diagnostics (not yet implemented)}
+\alias{lm.influence.glm2Matrix}
+\title{Regression Diagnostics}
+\usage{
+\method{influence}{glm2Matrix}(model, do.coef = TRUE, ...)
+
+lm.influence.glm2Matrix(model, do.coef = TRUE, ...)
+}
+\arguments{
+\item{model}{an object of class \code{glm2Matrix} as returned by \code{\link{glm2}}.}
+
+\item{do.coef}{logical indicating if the changed \code{coefficients} are desired.}
+
+\item{...}{further arguments passed to or from other methods (ignored).}
+}
 \value{
-An error indicating the method is not implemented.
+See documentation for \code{\link[stats]{influence}}.
 }
 \description{
-This method is a placeholder. The \code{\link[stats]{influence}}
-method for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")} 
-is not yet implemented.
+An implementation of \code{\link[stats]{influence}}
+for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}.
+}
+\examples{
+## Analysis of the life-cycle savings data
+## given in Belsley, Kuh and Welsch.
+summary(glm.SR <- glm2(sr ~ pop15 + pop75 + dpi + ddpi,
+                       data = LifeCycleSavings,
+                       method = "glm.fit2.Matrix"),
+        correlation = TRUE)
+utils::str(glmI <- influence(glm.SR))
+
+}
+\seealso{
+\code{\link[stats]{influence}}, and its "See Also" section.
 }

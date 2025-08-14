@@ -3,6 +3,7 @@
 #
 #  Modified by Mark W. Donoghoe:
 #    31/01/2025 - error for glm.fit2.Matrix
+#    14/08/2025 - implementation for use with Matrix
 #
 
 #  Copyright (C) 1995-2012 The R Core Team
@@ -25,23 +26,34 @@
 ## The following is adapted from John Fox's  "car" :
 
 
-#' Regression Diagnostics (not yet implemented)
+#' Regression Diagnostics
 #'
-#' @description This method is a placeholder. The \code{\link[stats]{influence}}
-#' method for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")} 
-#' is not yet implemented.
-#' 
-#' @usage NULL
+#' @description An implementation of \code{\link[stats]{influence}}
+#' for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}.
 #'
-#' @return An error indicating the method is not implemented.
+#' @param model an object of class \code{glm2Matrix} as returned by \code{\link{glm2}}.
+#' @param do.coef logical indicating if the changed \code{coefficients} are desired.
+#' @param ... further arguments passed to or from other methods (ignored).
+#'
+#' @return See documentation for \code{\link[stats]{influence}}.
+#'
+#' @seealso \code{\link[stats]{influence}}, and its "See Also" section.
+#'
+#' @examples
+#' ## Analysis of the life-cycle savings data
+#' ## given in Belsley, Kuh and Welsch.
+#' summary(glm.SR <- glm2(sr ~ pop15 + pop75 + dpi + ddpi,
+#'                        data = LifeCycleSavings,
+#'                        method = "glm.fit2.Matrix"))
+#' utils::str(glmI <- influence(glm.SR))
+#'
 #' @method influence glm2Matrix
 #' @importFrom stats influence
 #' @export
 
 influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
   
-  #stop("influence measures not implemented for glm.fit2.Matrix")
-  res <- lm.influence.Matrix(model, do.coef = do.coef, ...)
+  res <- lm.influence.glm2Matrix(model, do.coef = do.coef, ...)
   pRes <- na.omit(residuals(model, type = "pearson"))[model$prior.weights != 0]
   pRes <- naresid(model$na.action, pRes)
   names(res)[names(res) == "wt.res"] <- "dev.res"
@@ -49,7 +61,10 @@ influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
   
 }
 
-lm.influence.Matrix <- function(model, do.coef = TRUE) {
+#' @rdname influence.glm2Matrix
+#' @export
+
+lm.influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
 
   # TODO: Improve on this to use Matrix instead of matrix
   wt.res <- weighted.residuals(model)
@@ -144,6 +159,12 @@ lm.influence.Matrix <- function(model, do.coef = TRUE) {
   res[c("hat", "coefficients", "sigma", "wt.res")] # ensure order, for backward compatibility and regression tests
 }
 
+# R version of src/library/stats/src/influence.c
+#   which calls src/library/stats/src/lminfl.f
+# Using the Matrix package
+
+#' @keywords internal
+
 influence.Matrix <- function(mqr, e, tol) {
 
   # Diagonal of hat matrix
@@ -173,7 +194,15 @@ influence.Matrix <- function(mqr, e, tol) {
 
 }
 
-# Adapted from stats:::naresid.exclude
+#  This function is based on File src/library/stats/R/nafns.R
+#  Part of the R package, https://www.R-project.org
+#
+#  Modified by Mark W. Donoghoe:
+#    14/08/2025 - applied to x of type Matrix
+#
+
+#' @keywords internal
+
 naresid.Matrix <- function(omit, x, ...) {
 
   if (class(omit) != "exclude")
