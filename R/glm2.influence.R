@@ -64,7 +64,7 @@ lm.influence.Matrix <- function(model, do.coef = TRUE) {
     ## if we have a point with hat = 1, the corresponding e should be
     ## exactly zero.  Protect against returning Inf by forcing this
     e[abs(e) < 100 * .Machine$double.eps * median(abs(e))] <- 0
-    mqr <- model$qr_full
+    mqr <- model$qr
     n <- as.integer(nrow(mqr$qr))
     if (is.na(n)) stop("invalid model QR matrix")
     ## in na.exclude case, omit NAs; also drop 0-weight cases
@@ -76,14 +76,15 @@ lm.influence.Matrix <- function(model, do.coef = TRUE) {
     ## res <- .Call(C_influence, mqr, e, tol)
     res <- influence.Matrix(mqr, e, tol)
     if (do.coef) {
-      ok <- seq_len(Matrix::qr2rankMatrix(mqr$qr)) # need this for rank-deficient cases
-      Q <- Matrix::qr.Q(mqr$qr)[, ok, drop=FALSE]
-      R <- Matrix::qr.R(mqr$qr)[ok, ok, drop=FALSE]
+      # NB mqr is QR after removal of linearly dependent columns
+      Q <- Matrix::qr.Q(mqr$qr)
+      R <- Matrix::qr.R(mqr$qr)
       hat <- res$hat
       invRQtt <- Matrix::t(Matrix::solve(R, Matrix::t(Q)))
       # Need to back-permute this
-      qr.uns <- is.unsorted(mqr$pivot, strictly = TRUE)
-      if (qr.uns) invRQtt <- invRQtt[, Matrix::invertPerm(mqr$pivot)]
+      mpivot <- mqr$qr@q + 1L
+      qr.uns <- is.unsorted(mpivot, strictly = TRUE)
+      if (qr.uns) invRQtt <- invRQtt[, Matrix::invertPerm(mpivot)]
       k <- NCOL(Q)
       q <- NCOL(e)
       ## NB: The following relies on recycling: diag(v) %*% A == A * v
@@ -115,7 +116,7 @@ lm.influence.Matrix <- function(model, do.coef = TRUE) {
       hat[is.na(hat)] <- 0      # omitted cases have 0 leverage
       res$hat <- hat
       if (do.coef) {
-        coefficients <- naresid(model$na.action, res$coefficients)
+        coefficients <- naresid.Matrix(model$na.action, res$coefficients)
         coefficients[is.na(coefficients)] <- 0 # omitted cases have 0 change
         res$coefficients <- if(is.mlm) coefficients else drop1d(coefficients)
       }
@@ -169,6 +170,31 @@ influence.Matrix <- function(mqr, e, tol) {
   sigma[hk,] <- sqrt(s2 / denom)
 
   list(hat = h, sigma = sigma)
+
+}
+
+# Adapted from stats:::naresid.exclude
+naresid.Matrix <- function(omit, x, ...) {
+
+  if (class(omit) != "exclude")
+    return(x)
+
+  if (length(omit) == 0 || !is.numeric(omit))
+    stop("invalid argument 'omit'")
+  if (!inherits(x, "Matrix"))
+    stop("x is not a Matrix")
+
+  n <- NROW(x)
+  keep <- rep.int(NA, n + length(omit))
+  keep[-omit] <- 1L:n
+  x <- x[keep, , drop = FALSE]
+  temp <- rownames(x)
+  if (length(temp)) {
+    temp[omit] <- names(omit)
+    rownames(x) <- temp
+  }
+
+  x
 
 }
 
