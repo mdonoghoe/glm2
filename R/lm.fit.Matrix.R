@@ -70,6 +70,7 @@ lm.fit.Matrix <- function (x, y, offset = NULL, method = "qr", tol = 1e-07, sing
   coef <- z$coefficients
   ## careful here: the rank might be 0
   r1 <- seq_len(z$rank)
+  z$effects[r1] <- z$effects[Matrix::invertPerm(xfit@q + 1)]
   dn <- if (is.null(colnames(x))) paste0("x", 1L:p) else colnames(x)
   nmeffects <- c(dn[r1], rep.int("", n - z$rank))
   r2 <- if (z$rank < p) 

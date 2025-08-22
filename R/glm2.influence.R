@@ -227,7 +227,7 @@ naresid.Matrix <- function(omit, x, ...) {
 
 }
 
-#' @rdname dfbetas.glm2Matrix
+#' @rdname influence.measures
 #' @method dfbeta glm2Matrix
 #' @export
 
@@ -236,6 +236,14 @@ dfbeta.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do.co
   mlm <- is.matrix(wr <- infl$wt.res)
   if (!mlm) dimnames(b) <- list(names(wr), variable.names(model))
   b
+}
+
+#' @rdname influence.measures
+#' @method hatvalues glm2Matrix
+#' @export
+
+hatvalues.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do.coef=FALSE), ...) {
+  NextMethod("hatvalues", object = model, infl = infl)
 }
 
 #' Regression Deletion Diagnostics (partially implemented)
@@ -248,6 +256,26 @@ dfbeta.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do.co
 #'
 #' @seealso \code{\link[stats]{influence.measures}}.
 #'
+#' @export influence.measures
+
+influence.measures <- function(model, infl = influence(model)) {
+
+  if (inherits(model, "glm2Matrix"))
+    influence.measures.glm2Matrix(model, infl)
+  else
+    stats::influence.measures(model, infl)
+
+}
+
+#' @keywords internal
+
+influence.measures.glm2Matrix <- function(model, infl = influence(model)) {
+
+  stop("influence.measures not yet implemented for glm2Matrix models.")
+
+}
+
+#' @rdname influence.measures
 #' @method dfbetas glm2Matrix
 #' @importFrom stats dfbetas lm.influence
 #' @export
@@ -258,7 +286,7 @@ dfbetas.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do.c
   xxi <- Matrix::chol2inv(Matrix::qr.R(qrm$qr))
   db <- dfbeta(model, infl)
   if (length(dim(db)) == 3L) db <- aperm(db, c(1L, 3:2))
-  # Might need to fix this up if sigma is a Matrix
-  db / outer(infl$sigma, sqrt(Matrix::diag(xxi)))
+  reord <- Matrix::invertPerm(qrm$qr@q + 1)
+  db / outer(infl$sigma, sqrt(Matrix::diag(xxi))[reord])
   
 }

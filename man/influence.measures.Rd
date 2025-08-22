@@ -2,10 +2,16 @@
 % Please edit documentation in R/glm2.influence.R
 \name{dfbeta.glm2Matrix}
 \alias{dfbeta.glm2Matrix}
+\alias{hatvalues.glm2Matrix}
+\alias{influence.measures}
 \alias{dfbetas.glm2Matrix}
 \title{Regression Deletion Diagnostics (partially implemented)}
 \usage{
 \method{dfbeta}{glm2Matrix}(model, infl = lm.influence.glm2Matrix(model, do.coef = TRUE), ...)
+
+\method{hatvalues}{glm2Matrix}(model, infl = lm.influence.glm2Matrix(model, do.coef = FALSE), ...)
+
+\method{influence}{measures}(model, infl = influence(model))
 
 \method{dfbetas}{glm2Matrix}(model, infl = lm.influence.glm2Matrix(model, do.coef = TRUE), ...)
 }

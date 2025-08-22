@@ -354,3 +354,15 @@ get_goodcoefs <- function(qrx, tol) {
   return(!lindep)
   
 }
+
+#' @method model.matrix glm2Matrix
+#' @export
+
+model.matrix.glm2Matrix <- function(object, ...) {
+  if (n_match <- match("x", names(object), 0L))
+    object[[n_match]]
+  else {
+    Matrix::sparse.model.matrix(object$terms, model.frame(object),
+                                object$contrasts)
+  }
+}
