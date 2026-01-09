@@ -1,4 +1,6 @@
-#  These functions are based on File src/library/stats/R/aov.R
+#  These functions are based on Files
+#    src/library/stats/R/aov.R
+#    src/library/base/R/kappa.R
 #  Part of the R package, https://www.R-project.org
 #
 #  Modified by Mark W. Donoghoe:
@@ -130,4 +132,47 @@ alias.glm2Matrix <- function(object, complete = TRUE, partial = FALSE,
   class(value) <- "listof"
   value
 
+}
+
+#' Condition Number for glm2Matrix Fits
+#'
+#' Computes the condition number of the design matrix for a
+#' \code{glm2Matrix} fit (a \code{glm} object fit using 
+#' \code{method = "glm.fit2Matrix"}).
+#'
+#' @param z A fitted \code{glm2Matrix} object.
+#' @param ... Additional arguments passed to internal methods.
+#'   See \code{\link[base]{kappa}} for details, and the Details below for
+#'   a note about the \code{exact} argument.
+#'
+#' @details
+#' This method is based on the QR decomposition used internally to fit
+#' the model.
+#'
+#' It calls \code{\link[base]{kappa}} on the dense R matrix, and therefore
+#' does not provide any efficiency benefits for large design matrices over
+#' a model fit using \code{\link[stats]{glm}} (or \code{glm2} without \code{Matrix}).
+#'
+#' Additionally, when \code{exact = FALSE} (the default), the returned value 
+#' may not agree with that returned by \code{\link[base]{kappa.lm}} applied to
+#' an equivalent dense fit. This is because the sparse QR decomposition may
+#' have employed column pivoting so that the R matrix corresponds to a 
+#' column-permuted design matrix. This can be checked by inspecting
+#' \code{z$qr_full$qr@q}.
+#'
+#' @return The condition number, \eqn{\kappa}, or an approximation if \code{exact = FALSE}.
+#'
+#' @seealso \code{\link[base]{kappa}}, \code{\link[Matrix]{sparseQR-class}}
+#'
+#' @export
+#' @method kappa glm2Matrix
+
+kappa.glm2Matrix <- function(z, ...) .kappa_qr_Matrix(z$qr_full, ...)
+
+.kappa_qr_Matrix <- function(z, ...) {
+  
+  stopifnot(length(d <- dim(qr <- z$qr)) == 2L)
+  R <- Matrix::qr.R(qr)
+  .kappa_tri(as.matrix(R), ...)
+  
 }
