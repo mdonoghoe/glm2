@@ -289,8 +289,12 @@ glm.fit2.Matrix <-
       }
       ## update by accurate calculation, including 0-weight cases.
       residuals <- as.numeric((y - mu)/mu.eta(as.numeric(eta)))
-      pivot <- c(which(goodcoef), which(!goodcoef))
+      kept <- which(goodcoef)
+      pivot <- c(kept, which(!goodcoef))
       qr <- fit$qr
+      q_inner <- qr@q + 1L
+      if (!length(q_inner)) q_inner <- seq_along(kept)
+      effects.pivot <- kept[q_inner[seq_len(fit$rank)]]
       Rmat <- Matrix::qr.R(qr, complete = FALSE, backPermute = FALSE)
       rownames(Rmat) <- colnames(Rmat)
       names(coef) <- xnames
@@ -312,7 +316,8 @@ glm.fit2.Matrix <-
     names(y) <- ynames
     if (!EMPTY) 
         names(fit$effects) <- 
-            c(xxnames[seq_len(fit$rank)], rep.int("", sum(good) - fit$rank))
+            c(xnames[effects.pivot], rep.int("", sum(good) - fit$rank))
+            ##c(xxnames[seq_len(fit$rank)], rep.int("", sum(good) - fit$rank))
     ## calculate null deviance -- corrected in glm() if offset and intercept
     wtdmu <- if (intercept) sum(weights * y)/sum(weights) else linkinv(offset)
     nulldev <- sum(dev.resids(y, wtdmu, weights))
@@ -326,7 +331,9 @@ glm.fit2.Matrix <-
         aic(y, n, mu, weights, dev) + 2 * rank
         ##     ^^ is only initialize()d for "binomial" [yuck!]
     list(coefficients = coef, residuals = residuals, fitted.values = mu, 
-         effects = if (!EMPTY) fit$effects, R = if (!EMPTY) Rmat,
+         effects = if (!EMPTY) fit$effects,
+         effects.pivot = if (!EMPTY) effects.pivot,
+         R = if (!EMPTY) Rmat,
          rank = rank, qr = if (!EMPTY) list(qr = qr, pivot = pivot), 
          qr_full = if(!EMPTY) list(qr = qr_full, pivot = qr_full_pivot), 
          family = family, 
