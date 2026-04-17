@@ -3,10 +3,10 @@
 #
 #  Modified by Mark W. Donoghoe:
 #    31/01/2025 - error for glm.fit2.Matrix
-#    14/08/2025 - implementation for use with Matrix
+#    14/08/2025-02/04/2026 - implementation for use with Matrix
 #
 
-#  Copyright (C) 1995-2012 The R Core Team
+#  Copyright (C) 1995-2026 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -56,8 +56,9 @@ influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
   res <- lm.influence.glm2Matrix(model, do.coef = do.coef, ...)
   pRes <- na.omit(residuals(model, type = "pearson"))[model$prior.weights != 0]
   pRes <- naresid(model$na.action, pRes)
-  names(res)[names(res) == "wt.res"] <- "dev.res"
-  c(res, list(pear.res = pRes))
+  dRes <- na.omit(residuals(model, type = "deviance"))[model$prior.weights != 0]
+  dRes <- naresid(model$na.action, dRes)
+  c(res, list(pear.res = pRes, dev.res = dRes))
   
 }
 
@@ -72,7 +73,8 @@ lm.influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
   is.mlm <- is.matrix(e) # n x q  matrix in the mulitvariate lm case
   if (model$rank == 0) {
     n <- length(wt.res) # drops 0 wt, may drop NAs
-    sigma <- sqrt(deviance(model) / df.residual(model))
+    ## (pd feb 2026, avoid deviance() here)
+    sigma <- sqrt(sum(e^2)/df.residual(model))
     res <- list(hat = rep(0, n), coefficients = matrix(0, n, 0),
                 sigma = rep(sigma, n))
   } else {
@@ -136,7 +138,8 @@ lm.influence.glm2Matrix <- function(model, do.coef = TRUE, ...) {
         res$coefficients <- if(is.mlm) coefficients else drop1d(coefficients)
       }
       sigma <- naresid(model$na.action, res$sigma)
-      sigma[is.na(sigma)] <- sqrt(deviance(model)/df.residual(model))
+      ## (pd, feb 2026)  avoid deviance()
+      sigma[is.na(sigma)] <- sqrt(sum(e^2)/df.residual(model))
       res$sigma <- if(is.mlm) sigma else drop(sigma)
     }
   }
@@ -250,7 +253,7 @@ hatvalues.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do
 #'
 #' @description A suite of functions computing regression (leave-one-out deletion)
 #' diagnostics for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. 
-#' Currently only \code{dfbetas} and \code{dfbeta} are implemented.
+#' An implementation of \code{\link[stats]{influence.measures}} for these models.
 #'
 #' @return See documentation for \code{\link[stats]{influence.measures}}.
 #'
@@ -270,10 +273,72 @@ influence.measures <- function(model, infl = influence(model)) {
 #' @keywords internal
 
 influence.measures.glm2Matrix <- function(model, infl = influence(model)) {
-
-  stop("influence.measures not yet implemented for glm2Matrix models.")
+  
+  is.influential <- function(infmat, n)# n == sum(h > 0)  [!]
+  {
+    ## Argument is result of using influence.measures
+    d <- dim(infmat)
+    k <- d[[length(d)]] - 4L
+    if(n <= k)
+      stop("too few cases i with h_ii > 0), n < k")
+    absmat <- abs(infmat)
+    if (!inherits(infmat, "Matrix"))
+      stop("infmat is not a Matrix")
+    # We don't need to worry about the mlm case
+    r <-
+      ## a matrix  of logicals structured like the argument
+      cbind(absmat[, 1L:k] > 1,                       # |dfbetas| > 1
+            absmat[, k + 1] > 3 * sqrt(k/(n - k)),    # |dffit| > ..
+            abs(1 - infmat[, k + 2]) > (3*k)/(n - k), # |1-cov.r| >..
+            pf(infmat[, k + 3], k, n - k) > 0.5,      # "P[cook.d..]" > .5
+            infmat[, k + 4] > (3 * k)/n)              # hat > 3k/n
+    #attributes(r) <- attributes(infmat)               # dim, dimnames, ..
+    
+    r
+  }
+  
+  p <- model$rank
+  e <- weighted.residuals(model)
+  s <- sqrt(sum(e^2, na.rm=TRUE)/df.residual(model))
+  mqr <- model$qr
+  xxi <- Matrix::chol2inv(Matrix::qr.R(mqr$qr))
+  si <- infl$sigma
+  h <- infl$hat
+  cf <- infl$coefficients
+  reord <- Matrix::invertPerm(mqr$qr@q + 1)
+  dfbetas <- cf / outer(infl$sigma, sqrt(Matrix::diag(xxi))[reord])
+  vn <- variable.names(model); vn[vn == "(Intercept)"] <- "1_"
+  dimnames(dfbetas)[[length(dim(dfbetas))]] <- paste0("dfb.", abbreviate(vn))
+  ## Compatible to dffits():
+  dffits <- e*sqrt(h)/(si*(1-h))
+  if(any(ii <- is.infinite(dffits))) dffits[ii] <- NaN
+  cov.ratio <- (si/s)^(2 * p)/(1 - h)
+  cooks.d <- (infl$pear.res/(1-h))^2 * h/(summary(model)$dispersion * p)
+  infmat <-
+    cbind(dfbetas, dffit = dffits, cov.r = cov.ratio,
+            cook.d = cooks.d, hat = h)
+  infmat[is.infinite(infmat)] <- NaN
+  is.inf <- is.influential(infmat, sum(h > 0))
+  ans <- list(infmat = as.matrix(infmat), 
+              is.inf = as.matrix(is.inf), call = model$call)
+  class(ans) <- "infl"
+  ans
 
 }
+
+## (pd, feb 2026) Function to check whether GLM family has fixed or estimated dispersion
+## paraphrased from summary.glm(). Internal function, not intended for export.
+## (Recent versions of binomial(), poisson() sets $dispersion==1 so the explicit check
+## is a relic. This comes via r84026 (Martyn, 2023) so probably too soon to remove.)
+
+#' @keywords internal
+
+estDisp <- function(fam)
+  (is.null(fam$dispersion) || is.na(fam$dispersion)) &&
+  !(fam$family %in% c("poisson", "binomial"))
+
+## (pd, feb 2026) The lm method should work for glm with estimated dispersion, but
+## for fixed dispersion, we should not use leave-one-out est.
 
 #' @rdname influence.measures
 #' @method dfbetas glm2Matrix
@@ -287,6 +352,45 @@ dfbetas.glm2Matrix <- function(model, infl = lm.influence.glm2Matrix(model, do.c
   db <- dfbeta(model, infl)
   if (length(dim(db)) == 3L) db <- aperm(db, c(1L, 3:2))
   reord <- Matrix::invertPerm(qrm$qr@q + 1)
-  db / outer(infl$sigma, sqrt(Matrix::diag(xxi))[reord])
+  diagxxi <- sqrt(Matrix::diag(xxi))[reord]
+  if (estDisp(model$family))
+    db / outer(infl$sigma, diagxxi)
+  else
+    sweep(db, 2, sqrt(sigma(model) * diagxxi), "/")
+  
+}
+
+#' @rdname influence.measures
+#' @export
+
+dffits <- function(model, infl,
+                   res = stats::weighted.residuals(model)) {
+  
+  if ( missing(infl) && inherits(model, "glm2Matrix") )
+    infl <- lm.influence.glm2Matrix(model, do.coef = FALSE)
+  
+  if ( missing(infl) ) {
+    stats::dffits(model, res = res)
+  } else {
+    stats::dffits(model, infl = infl, res = res)
+  }
+  
+}
+
+#' @rdname influence.measures
+#' @export
+
+covratio <- function(model, infl,
+                     res = stats::weighted.residuals(model)) {
+  
+  if ( missing(infl) && inherits(model, "glm2Matrix") )
+    infl <- lm.influence.glm2Matrix(model, do.coef = FALSE)
+  
+  if ( missing(infl) ) {
+    stats::covratio(model, res = res)
+  } else {
+    stats::covratio(model, infl = infl, res = res)
+  }
+  
   
 }

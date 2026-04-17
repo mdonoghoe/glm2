@@ -5,6 +5,8 @@
 \alias{hatvalues.glm2Matrix}
 \alias{influence.measures}
 \alias{dfbetas.glm2Matrix}
+\alias{dffits}
+\alias{covratio}
 \title{Regression Deletion Diagnostics (partially implemented)}
 \usage{
 \method{dfbeta}{glm2Matrix}(model, infl = lm.influence.glm2Matrix(model, do.coef = TRUE), ...)
@@ -14,6 +16,10 @@
 \method{influence}{measures}(model, infl = influence(model))
 
 \method{dfbetas}{glm2Matrix}(model, infl = lm.influence.glm2Matrix(model, do.coef = TRUE), ...)
+
+dffits(model, infl, res = stats::weighted.residuals(model))
+
+covratio(model, infl, res = stats::weighted.residuals(model))
 }
 \value{
 See documentation for \code{\link[stats]{influence.measures}}.
@@ -21,7 +27,7 @@ See documentation for \code{\link[stats]{influence.measures}}.
 \description{
 A suite of functions computing regression (leave-one-out deletion)
 diagnostics for GLMs fit using \code{glm2(..., method = "\link{glm.fit2.Matrix}")}. 
-Currently only \code{dfbetas} and \code{dfbeta} are implemented.
+An implementation of \code{\link[stats]{influence.measures}} for these models.
 }
 \seealso{
 \code{\link[stats]{influence.measures}}.
